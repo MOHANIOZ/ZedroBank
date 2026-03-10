@@ -29,6 +29,6 @@ You can explore and test the live APIs using the **Swagger UI** interface. It pr
 5. Click **"Execute"** to see the live response from the Render-hosted server.
 
 ## Tech Stack
-- **Backend:** Java 17, Spring Boot 3.x, Spring Security, Spring Data JPA
+- **Backend:** Java 21, Spring Boot 3.x, Spring Security, Spring Data JPA
 - **Database:** MySQL (Hosted on Aiven/Render)
 - **Deployment:** Render (Dockerized environment)
