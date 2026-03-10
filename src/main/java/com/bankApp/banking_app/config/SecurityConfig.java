@@ -16,19 +16,13 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // 1. Swagger matrum API docs-ku mattum full permission
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-
-                        // 2. Unga Banking APIs (Deposit, Withdraw, etc.)-ai Swagger-la test panna permit pannanum
-                        .requestMatchers("/api/accounts/**").permitAll()
-
+                        // Indha v1 path-ai correct-ah kudunga
+                        .requestMatchers("/api/v1/accounts/**").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                // 3. Browser popup-ai stop panna idhu kandippa venum
                 .httpBasic(basic -> basic.disable())
-                .formLogin(form -> form.disable())
-
-                .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()));
+                .formLogin(form -> form.disable());
 
         return http.build();
     }
