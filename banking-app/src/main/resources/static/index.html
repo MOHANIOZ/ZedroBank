@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Java Bank | Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="auth-container" id="authBox">
+    <h2>🏦 Java Bank Login</h2>
+    <input type="text" id="loginUser" placeholder="Username">
+    <input type="password" id="loginPass" placeholder="Password">
+    <button class="btn-primary" onclick="handleLogin()">Sign In</button>
+</div>
+
+<div id="homePage" style="display: none; width: 100%;">
+    <nav class="navbar">
+        <div class="logo">Java Bank 🏦</div>
+        <ul class="nav-links">
+            <li><a href="#" onclick="showSection('homeContent')">Home</a></li>
+            <li><a href="#" onclick="alert('Banking App v1.0 - Java Backend')">About</a></li>
+            <li><a href="#" onclick="alert('Contact: support@javabank.com')">Contact</a></li>
+            <li><a href="#" onclick="alert('Help: Call 1800-BANK-JAVA')">Help</a></li>
+            <li><a href="#" onclick="location.reload()">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="container" id="homeContent">
+        <h2>Welcome, Admin!</h2>
+        <p>Select a service to proceed:</p>
+        <div class="menu-grid">
+            <div class="menu-card" onclick="showSection('viewBalanceSection')">🔍 Check Balance</div>
+            <div class="menu-card" onclick="showSection('depositSection')">💰 Deposit Money</div>
+            <div class="menu-card" onclick="showSection('withdrawSection')">💸 Withdraw Money</div>
+            <div class="menu-card" onclick="showSection('transferSection')">🔄 Fund Transfer</div>
+        </div>
+    </div>
+
+    <div class="container section-page" id="depositSection" style="display: none;">
+        <button class="back-btn" onclick="showSection('homeContent')">⬅ Back</button>
+        <h2>💰 Deposit Money</h2>
+        <input type="number" id="depId" placeholder="Account ID">
+        <input type="number" id="depAmount" placeholder="Amount (₹)">
+        <button class="btn-success" onclick="apiCall('deposit', 'depId', 'depAmount')">Confirm Deposit</button>
+    </div>
+
+    <div class="container section-page" id="transferSection" style="display: none;">
+        <button class="back-btn" onclick="showSection('homeContent')">⬅ Back</button>
+        <h2>🔄 Fund Transfer</h2>
+        <input type="number" id="fromId" placeholder="From ID">
+        <input type="number" id="toId" placeholder="To ID">
+        <input type="number" id="tAmt" placeholder="Amount (₹)">
+        <button class="btn-primary" onclick="makeTransfer()">Transfer Now</button>
+    </div>
+
+    <div class="container section-page" id="viewBalanceSection" style="display: none;">
+        <button class="back-btn" onclick="showSection('homeContent')">⬅ Back</button>
+        <h2>🔍 Account Details</h2>
+        <input type="number" id="vId" placeholder="Enter ID">
+        <button class="btn-primary" onclick="getAccountDetails()">View</button>
+        <div id="res" style="margin-top:20px; font-weight:bold;"></div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

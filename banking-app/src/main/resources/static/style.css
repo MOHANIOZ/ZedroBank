@@ -1,0 +1,32 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; }
+
+/* Navbar Style */
+.navbar {
+    background: #2c3e50;
+    color: white;
+    padding: 15px 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    position: fixed;
+    top: 0;
+}
+.nav-links { list-style: none; display: flex; gap: 20px; }
+.nav-links a { color: white; text-decoration: none; font-size: 14px; }
+
+/* Dashboard Cards */
+.container { margin-top: 100px; text-align: center; width: 100%; max-width: 800px; margin-left: auto; margin-right: auto; padding: 20px; background: white; border-radius: 15px; }
+.menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 30px; }
+.menu-card { background: #3498db; color: white; padding: 40px; border-radius: 12px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s; }
+.menu-card:hover { transform: scale(1.05); background: #2980b9; }
+
+/* Common UI */
+input { width: 80%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
+button { padding: 12px 25px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; margin-top: 10px; }
+.btn-primary { background: #3498db; color: white; }
+.btn-success { background: #27ae60; color: white; }
+.back-btn { background: #95a5a6; color: white; float: left; margin-bottom: 20px; }
+
+.auth-container { background: white; padding: 50px; margin: 150px auto; border-radius: 15px; width: 350px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
