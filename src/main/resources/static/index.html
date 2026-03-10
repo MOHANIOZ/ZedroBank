@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Bank | Premium Banking</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Animated Background -->
+<div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+</div>
+
+<!-- LOGIN PAGE -->
+<div class="auth-wrapper" id="authBox">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <span class="logo-icon">₹</span>
+            <h1>JavaBank</h1>
+            <p>Premium Digital Banking</p>
+        </div>
+        <div class="auth-form">
+            <div class="input-group">
+                <span class="input-icon">👤</span>
+                <input type="text" id="loginUser" placeholder="Username" autocomplete="off">
+            </div>
+            <div class="input-group">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="loginPass" placeholder="Password">
+            </div>
+            <button class="btn-login" onclick="handleLogin()">
+                <span>Sign In</span>
+                <span class="btn-arrow">→</span>
+            </button>
+            <p class="hint-text">Demo: admin / admin123</p>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="homePage" style="display:none;" class="app-wrapper">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <span class="logo-icon-sm">₹</span>
+            <span class="brand-name">JavaBank</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" onclick="showSection('homeContent'); setActive(this)">
+                <span class="nav-icon">🏠</span><span>Dashboard</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('viewBalanceSection'); setActive(this)">
+                <span class="nav-icon">🔍</span><span>Check Balance</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('depositSection'); setActive(this)">
+                <span class="nav-icon">💰</span><span>Deposit</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('withdrawSection'); setActive(this)">
+                <span class="nav-icon">💸</span><span>Withdraw</span>
+            </a>
+            <a href="#" class="nav-item" onclick="showSection('transferSection'); setActive(this)">
+                <span class="nav-icon">🔄</span><span>Transfer</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-chip">
+                <div class="avatar">A</div>
+                <div>
+                    <div class="user-name">Admin</div>
+                    <div class="user-role">Super Admin</div>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="doLogout()">⏻</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Bar -->
+        <header class="topbar">
+            <button class="hamburger" onclick="toggleSidebar()">☰</button>
+            <div class="topbar-right">
+                <div class="greeting" id="greeting">Good Morning ☀️</div>
+                <div class="date-badge" id="dateBadge"></div>
+            </div>
+        </header>
+
+        <!-- DASHBOARD -->
+        <section id="homeContent" class="page active-page">
+            <div class="page-header">
+                <h2>Welcome back, <span class="highlight">Admin</span></h2>
+                <p>Manage your accounts seamlessly</p>
+            </div>
+            <div class="stats-row">
+                <div class="stat-card" style="--accent:#4ade80">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-label">Total Deposits</div>
+                    <div class="stat-value">Ready</div>
+                </div>
+                <div class="stat-card" style="--accent:#60a5fa">
+                    <div class="stat-icon">🔄</div>
+                    <div class="stat-label">Transfers</div>
+                    <div class="stat-value">Active</div>
+                </div>
+                <div class="stat-card" style="--accent:#f472b6">
+                    <div class="stat-icon">🔒</div>
+                    <div class="stat-label">Security</div>
+                    <div class="stat-value">Secured</div>
+                </div>
+            </div>
+            <div class="quick-actions">
+                <h3>Quick Actions</h3>
+                <div class="action-grid">
+                    <div class="action-card" onclick="showSection('viewBalanceSection'); setActiveBySection('viewBalanceSection')">
+                        <div class="action-emoji">🔍</div>
+                        <div class="action-label">Check Balance</div>
+                        <div class="action-sub">View account details</div>
+                    </div>
+                    <div class="action-card" onclick="showSection('depositSection'); setActiveBySection('depositSection')">
+                        <div class="action-emoji">💰</div>
+                        <div class="action-label">Deposit</div>
+                        <div class="action-sub">Add funds instantly</div>
+                    </div>
+                    <div class="action-card" onclick="showSection('withdrawSection'); setActiveBySection('withdrawSection')">
+                        <div class="action-emoji">💸</div>
+                        <div class="action-label">Withdraw</div>
+                        <div class="action-sub">Cash out anytime</div>
+                    </div>
+                    <div class="action-card" onclick="showSection('transferSection'); setActiveBySection('transferSection')">
+                        <div class="action-emoji">🔄</div>
+                        <div class="action-label">Transfer</div>
+                        <div class="action-sub">Send to any account</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHECK BALANCE -->
+        <section id="viewBalanceSection" class="page" style="display:none;">
+            <div class="page-header">
+                <button class="back-pill" onclick="goBack()">← Back</button>
+                <h2>🔍 Check Balance</h2>
+                <p>View account details by ID</p>
+            </div>
+            <div class="form-card">
+                <div class="input-group">
+                    <span class="input-icon">🆔</span>
+                    <input type="number" id="vId" placeholder="Enter Account ID">
+                </div>
+                <button class="btn-action btn-blue" onclick="getAccountDetails()">View Details</button>
+                <div id="res" class="result-box" style="display:none;"></div>
+            </div>
+        </section>
+
+        <!-- DEPOSIT -->
+        <section id="depositSection" class="page" style="display:none;">
+            <div class="page-header">
+                <button class="back-pill" onclick="goBack()">← Back</button>
+                <h2>💰 Deposit Money</h2>
+                <p>Add funds to an account</p>
+            </div>
+            <div class="form-card">
+                <div class="input-group">
+                    <span class="input-icon">🆔</span>
+                    <input type="number" id="depId" placeholder="Account ID">
+                </div>
+                <div class="input-group">
+                    <span class="input-icon">₹</span>
+                    <input type="number" id="depAmount" placeholder="Amount">
+                </div>
+                <button class="btn-action btn-green" onclick="apiCall('deposit','depId','depAmount')">Confirm Deposit</button>
+            </div>
+        </section>
+
+        <!-- WITHDRAW -->
+        <section id="withdrawSection" class="page" style="display:none;">
+            <div class="page-header">
+                <button class="back-pill" onclick="goBack()">← Back</button>
+                <h2>💸 Withdraw Money</h2>
+                <p>Withdraw from an account</p>
+            </div>
+            <div class="form-card">
+                <div class="input-group">
+                    <span class="input-icon">🆔</span>
+                    <input type="number" id="wId" placeholder="Account ID">
+                </div>
+                <div class="input-group">
+                    <span class="input-icon">₹</span>
+                    <input type="number" id="wAmount" placeholder="Amount">
+                </div>
+                <button class="btn-action btn-red" onclick="apiCall('withdraw','wId','wAmount')">Confirm Withdraw</button>
+            </div>
+        </section>
+
+        <!-- TRANSFER -->
+        <section id="transferSection" class="page" style="display:none;">
+            <div class="page-header">
+                <button class="back-pill" onclick="goBack()">← Back</button>
+                <h2>🔄 Fund Transfer</h2>
+                <p>Send money between accounts</p>
+            </div>
+            <div class="form-card">
+                <div class="input-group">
+                    <span class="input-icon">📤</span>
+                    <input type="number" id="fromId" placeholder="From Account ID">
+                </div>
+                <div class="input-group">
+                    <span class="input-icon">📥</span>
+                    <input type="number" id="toId" placeholder="To Account ID">
+                </div>
+                <div class="input-group">
+                    <span class="input-icon">₹</span>
+                    <input type="number" id="tAmt" placeholder="Amount">
+                </div>
+                <button class="btn-action btn-blue" onclick="makeTransfer()">Transfer Now</button>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
