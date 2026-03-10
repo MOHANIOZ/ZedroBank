@@ -127,4 +127,8 @@ public class AccountController {
         Account account = accountService.getMyAccount(username);
         return ResponseEntity.ok(AccountMapper.mapToAccountDto(account));
     }
+    @GetMapping("/")
+    public String home() {
+        return "ZedroBank is Live, Mohan! Access APIs at /api/v1/accounts";
+    }
 }

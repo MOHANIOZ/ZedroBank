@@ -17,7 +17,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         // Indha v1 path-ai correct-ah kudunga
-                        .requestMatchers("/api/v1/accounts/**").permitAll()
+                        .requestMatchers("/", "/api/v1/accounts/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll()
                         .anyRequest().authenticated()
                 )
