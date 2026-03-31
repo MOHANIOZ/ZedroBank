@@ -27,17 +27,23 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User loginRequest) {
-        // Find the user by username and process the authentication flow
+        // 1. Find the user in the database by their username
+        // Using Optional to handle 'User Not Found' safely
         return userRepository.findByUsername(loginRequest.getUsername())
                 .map(user -> {
-                    // Verify if the raw password matches the encoded password in the database
+                    // 2. Check if the raw password from request matches the hashed password in DB
                     if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-                        return ResponseEntity.ok("Login Successful! Welcome " + user.getUsername());
+
+                        // 3. SUCCESS: Return 200 OK with the User object
+                        // This allows the frontend to see user details (like ID or Role)
+                        return ResponseEntity.ok(user);
+
                     } else {
+                        // 4. FAILURE: Password does not match
                         return ResponseEntity.status(401).body("Invalid Password");
                     }
                 })
-                // Return unauthorized status if the username does not exist
+                // 5. FAILURE: Username does not exist in the database
                 .orElse(ResponseEntity.status(401).body("User not found"));
     }
 
