@@ -18,17 +18,21 @@ public class CustomUserDetailsService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Locates the user based on the username.
+     * This method is used by Spring Security to perform authentication.
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // 1. Database-la username irukkannu thedurom (Optional use panrom)
+        // Search for the user in the database; throw an exception if not found
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User kidaikala boss: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
-        // 2. Database-la irukira User-ai Spring Security-ku puriyura "UserDetails" format-ku mathurom
+        // Convert our custom User entity into Spring Security's UserDetails object
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                new ArrayList<>() // Ippo kaaliya Roles (Authorities) anuprom
+                new ArrayList<>() // Currently passing an empty list of authorities/roles
         );
     }
 }

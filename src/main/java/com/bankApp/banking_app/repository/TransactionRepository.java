@@ -8,6 +8,6 @@ import org.springframework.data.domain.Pageable; // Indha import mukkiyam
 import java.util.List;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-    // Oru specific account-oda transactions-ai mattum edukka
+    // fetch the specific account transaction
     List<Transaction> findByFromAccountIdOrToAccountId(Long fromId, Long toId, Pageable pageable);
 }

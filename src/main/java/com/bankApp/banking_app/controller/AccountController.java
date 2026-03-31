@@ -1,6 +1,7 @@
 package com.bankApp.banking_app.controller;
 
 import com.bankApp.banking_app.dto.AccountDto;
+import com.bankApp.banking_app.dto.TransactionDto;
 import com.bankApp.banking_app.mapper.AccountMapper;
 import com.bankApp.banking_app.entity.Account;
 import com.bankApp.banking_app.repository.TransactionRepository;
@@ -16,7 +17,6 @@ import com.bankApp.banking_app.entity.Transaction;
 
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/accounts")
@@ -26,7 +26,7 @@ public class AccountController {
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
 
-    // Constructor Injection (Indha block thaan red line-ai remove pannum)
+    // Constructor Injection for required dependencies
     public AccountController(AccountService accountService,
                              UserRepository userRepository,
                              TransactionRepository transactionRepository) {
@@ -35,60 +35,62 @@ public class AccountController {
         this.transactionRepository = transactionRepository;
     }
 
-    // Puthiya account create panna
+    // Endpoint to create a new bank account
     @PostMapping
     public Account addAccount(@RequestBody Account account) {
         return accountService.createAccount(account);
     }
 
-    // Oru account-ai pakka
+    // Fetch details of a specific account by its ID
     @GetMapping("/{id}")
     public Account getAccount(@PathVariable Long id) {
         return accountService.getAccountById(id);
     }
 
-    // Ella accounts-aiyum list panna
+    // Retrieve a list of all existing accounts
     @GetMapping
     public List<Account> getAllAccounts() {
         return accountService.getAllAccounts();
     }
 
+    // Deposit funds into a specific account
     @PutMapping("/{id}/deposit")
-    public ResponseEntity<AccountDto> deposit(@PathVariable Long id, @RequestBody Map<String, Double> request) {
-
-        Double amount = request.get("amount");
+    public ResponseEntity<AccountDto> deposit(@PathVariable Long id, @RequestBody TransactionDto request) {
+        Double amount = request.getAmount();
         if (amount <= 0) {
-            throw new RuntimeException("Deposit Amount must be Positive");
+            throw new RuntimeException("Deposit Amount must be positive");
         }
-        // Service ippo Account-ah return pannum, so error varaadhu
-        Account updatedAccount = accountService.deposit(id, amount);
 
-        // Mapper vachu clean-ah anupuvom
+        // Update account balance via service and return mapped DTO
+        Account updatedAccount = accountService.deposit(id, amount);
         return ResponseEntity.ok(AccountMapper.mapToAccountDto(updatedAccount));
     }
 
+    // Withdraw funds from a specific account
     @PutMapping("/{id}/withdraw")
-    public ResponseEntity<AccountDto> withdraw(@PathVariable Long id, @RequestBody Map<String, Double> request) {
-        Double amount = request.get("amount");
+    public ResponseEntity<AccountDto> withdraw(@PathVariable Long id, @RequestBody TransactionDto request) {
+        Double amount = request.getAmount();
         Account updatedAccount = accountService.withdraw(id, amount);
         return ResponseEntity.ok(AccountMapper.mapToAccountDto(updatedAccount));
     }
 
+    // Securely transfer funds between accounts using the authenticated user's context
     @PostMapping("/transfer")
-    public ResponseEntity<String> transfer(Principal principal, @RequestBody Map<String, Object> request) {
-        // 1. Yaaru login panni irukkanu check pannuvom (Security-kaga)
+    public ResponseEntity<String> transfer(Principal principal, @RequestBody TransactionDto request) {
+        // Retrieve the username of the logged-in user
         String username = principal.getName();
 
-        // 2. Body-la irundhu yendha account-la irundhu poganumnu vanguvom
-        Long fromAccountId = Long.valueOf(request.get("from_account_id").toString());
-        Long toAccountId = Long.valueOf(request.get("to_account_id").toString());
-        Double amount = Double.valueOf(request.get("amount").toString());
+        Long fromAccountId = request.getFromAccountId();
+        Long toAccountId = request.getToAccountId();
+        Double amount = request.getAmount();
 
-        // 3. Oru extra safety check: Andha 'fromAccountId' namma 'Vijay' oda account thaana-nu
-        // Service-la oru check pottuta innum nalladhu.
+        // Perform the transfer operation
         accountService.transferFromMyAccount(username, fromAccountId, toAccountId, amount);
-        return ResponseEntity.ok("Transfer successful from Account: " + fromAccountId);
+
+        return ResponseEntity.ok("Transfer successful from Account: " + fromAccountId + " to Account: " + toAccountId);
     }
+
+    // Retrieve transaction history for the authenticated user with pagination and sorting
     @GetMapping("/my-transactions")
     public ResponseEntity<List<Transaction>> getMyTransactions(
             Principal principal,
@@ -99,7 +101,7 @@ public class AccountController {
         User user = userRepository.findByUsername(username).orElseThrow();
         Long accountId = user.getAccount().getId();
 
-        // Pageable object create panrom (Sorting sethu)
+        // Create a Pageable object to handle pagination and sort by most recent transactions
         Pageable pageable = PageRequest.of(page, size, Sort.by("timestamp").descending());
 
         List<Transaction> history = transactionRepository.findByFromAccountIdOrToAccountId(accountId, accountId, pageable);
@@ -107,11 +109,14 @@ public class AccountController {
         return ResponseEntity.ok(history);
     }
 
+    // Administrative endpoint to delete an account by ID
     @DeleteMapping("/{id}")
     public String delete(@PathVariable Long id) {
-        accountService.delete(id); // Ippo method name match aagum, red line poyidum
+        accountService.delete(id);
         return "Account deleted successfully with ID: " + id;
     }
+
+    // Self-service endpoint to delete the authenticated user's profile and account
     @DeleteMapping("/delete-me")
     public String delete(Principal principal) {
         String username = principal.getName();
@@ -119,16 +124,17 @@ public class AccountController {
         return "Your Account and User profile deleted successfully!";
     }
 
+    // Fetch the account details of the currently logged-in user
     @GetMapping("/my-account")
     public ResponseEntity<AccountDto> getMyAccountDetails(Principal principal) {
-        // principal.getName() kudutha, ippo login panni irukira username varum
         String username = principal.getName();
-
         Account account = accountService.getMyAccount(username);
         return ResponseEntity.ok(AccountMapper.mapToAccountDto(account));
     }
+
+    // Root endpoint for API health check or landing message
     @GetMapping("/")
     public String home() {
-        return "ZedroBank is Live, Mohan! Access APIs at /api/v1/accounts";
+        return "ZedroBank is Live! Access APIs at /api/v1/accounts";
     }
 }
