@@ -4,9 +4,12 @@ import com.bankApp.banking_app.dto.UserDto;
 import com.bankApp.banking_app.entity.Account;
 import com.bankApp.banking_app.entity.User;
 import com.bankApp.banking_app.repository.UserRepository;
+import com.bankApp.banking_app.security.JwtUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -15,61 +18,65 @@ public class AuthController {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    // Constructor injection for repository and password encoder
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthController(UserRepository userRepository,
+                          PasswordEncoder passwordEncoder,
+                          JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
     /**
-     * Authenticates a user based on username and password.
+     * Authenticates a user and returns a JWT token on success.
+     * The frontend stores this token and sends it as "Authorization: Bearer <token>"
+     * on every subsequent request.
      */
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User loginRequest) {
-        // 1. Find the user in the database by their username
-        // Using Optional to handle 'User Not Found' safely
         return userRepository.findByUsername(loginRequest.getUsername())
                 .map(user -> {
-                    // 2. Check if the raw password from request matches the hashed password in DB
                     if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+                        // ✅ Generate JWT token for the authenticated user
+                        String token = jwtUtil.generateToken(user.getUsername());
 
-                        // 3. SUCCESS: Return 200 OK with the User object
-                        // This allows the frontend to see user details (like ID or Role)
-                        return ResponseEntity.ok(user);
-
+                        // Return token + basic user info the frontend needs
+                        return ResponseEntity.ok(Map.of(
+                            "token", token,
+                            "username", user.getUsername(),
+                            "id", user.getId()
+                        ));
                     } else {
-                        // 4. FAILURE: Password does not match
-                        return ResponseEntity.status(401).body("Invalid Password");
+                        return ResponseEntity.status(401).body(Map.of("error", "Invalid password"));
                     }
                 })
-                // 5. FAILURE: Username does not exist in the database
-                .orElse(ResponseEntity.status(401).body("User not found"));
+                .orElse(ResponseEntity.status(401).body(Map.of("error", "User not found")));
     }
 
     /**
      * Registers a new user and automatically creates a linked bank account.
      */
     @PostMapping("/register")
-    public String registerUser(@RequestBody UserDto userDto) {
-        // Initialize a new User entity and encode the password for security
+    public ResponseEntity<?> registerUser(@RequestBody UserDto userDto) {
+        // Check if username already exists
+        if (userRepository.findByUsername(userDto.getUsername()).isPresent()) {
+            return ResponseEntity.status(409).body(Map.of("error", "Username already taken"));
+        }
+
         User user = new User();
         user.setUsername(userDto.getUsername());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setRole("ROLE_USER");
 
-        // Create a default Account for the new user
         Account account = new Account();
         account.setAccountHolderName(userDto.getUsername());
         account.setBalance(0.0);
-
-        // Establish the bidirectional relationship between User and Account
         account.setUser(user);
         user.setAccount(account);
 
-        // Save the user; the account is persisted automatically via CascadeType.ALL
         userRepository.save(user);
 
-        return "User and Account created successfully!";
+        return ResponseEntity.ok(Map.of("message", "User and Account created successfully!"));
     }
 }
